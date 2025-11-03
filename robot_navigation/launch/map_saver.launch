@@ -1,0 +1,4 @@
+<launch>
+	<node pkg="map_server" type="map_saver" name="map_saver1" args="-f /home/ubuntu/catkin_ws/src/robot_navigation/map/map_karto" output="screen">	
+	</node>
+</launch>
