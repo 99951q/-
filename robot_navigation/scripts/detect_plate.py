@@ -42,7 +42,6 @@ class PlateRecognizer:
         if not self.access_token:
             rospy.logerr("Failed to obtain Baidu API access token. Check your API credentials.")
             rospy.signal_shutdown("API authentication failed")
-            
         rospy.loginfo("Plate recognition service is ready")
 
     def image_callback(self, msg):

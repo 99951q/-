@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import rospy
 import actionlib
+import time
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion, Twist  # 确保导入 Twist 消息类型
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
@@ -102,27 +103,29 @@ class MissionNavigator:
                         self.stop_flag = True
                         rospy.loginfo("Navigation task completed.")  # 输出任务完成日志
                     elif self.current_goal_index == 4:
-                        self._recognize_person_at(1)
+                        start_time = time.time()
+                        person_result = self.recognize_person_client.call(detect_flag=1)
+                        end_time = time.time()
+                        cost_time = (end_time - start_time) * 1000
+                        rospy.loginfo("第一处社区识别到：%s | 耗时：%.2fms", person_result, cost_time)
+                        rospy.sleep(1)
+
                     elif self.current_goal_index == 5:
-                        self._recognize_person_at(2)
+                        start_time = time.time()
+                        person_result = self.recognize_person_client.call(detect_flag=2)
+                        end_time = time.time()
+                        cost_time = (end_time - start_time) * 1000
+                        rospy.loginfo("第二处社区识别到：%s | 耗时：%.2fms", person_result, cost_time)
+                        rospy.sleep(1)
+
                     elif self.current_goal_index == 9:
-                        self._recognize_plate_at(3)
+                        start_time = time.time()
+                        plate_result = self.recognize_plate_client.call(detect_flag=3)
+                        end_time = time.time()
+                        cost_time = (end_time - start_time) * 1000
+                        rospy.loginfo("识别到的车牌号为：%s | 耗时：%.2fms", plate_result, cost_time)
+                        rospy.sleep(1)
 
-    def _recognize_person_at(self, point):
-        rospy.loginfo("Starting person recognition at point %d.", point)
-        try:
-            result = self.recognize_person_client.call(point)
-            rospy.loginfo("Person recognized at point %d: %s", point, result)
-        except rospy.ServiceException as e:
-            rospy.logerr("Person recognition failed at point %d: %s", point, str(e))
-
-    def _recognize_plate_at(self, point):
-        rospy.loginfo("Starting plate recognition at point %d.", point)
-        try:
-            result = self.recognize_plate_client.call(point)
-            rospy.loginfo("Plate recognized at point %d: %s", point, result)
-        except rospy.ServiceException as e:
-            rospy.logerr("Plate recognition failed at point %d: %s", point, str(e))
 
     def _shutdown(self):
         # 确保 move_base_client 存在
